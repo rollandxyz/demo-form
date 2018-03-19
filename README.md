@@ -1,5 +1,27 @@
 # DemoForm
 
+
+```console
+npm install --save @angular/material @angular/cdk
+npm install --save angular/material2-builds angular/cdk-builds
+npm install --save hammerjs
+```
+
+If you're using the Angular CLI, you can add this to your styles.css:
+```js
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+```
+If you want to use the mat-icon component with the official Material Design Icons, load the icon font in your index.html.
+```js
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+```
+
+
+https://github.com/angular/material2/blob/master/src/lib/expansion/_expansion-theme.scss
+https://alligator.io/angular/material-design-angular-reference/
+https://stackblitz.com/angular/emvonvvpqyl?file=app%2Fprogress-bar-configurable-example.html
+
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.1.
 
 ## Development server

@@ -1,0 +1,294 @@
+<div layout-fill layout="column" layout-align="center none" class="mat-card-work-type-setup">
+    <mat-card>
+        <mat-card-content>
+            <h2 class="example-h2">Work Type Setup Progress</h2>
+            <section class="example-section">
+                <mat-progress-bar class="example-margin" [color]="accent" [mode]="determinate" [value]="step*10" [bufferValue]="totalSteps">
+                </mat-progress-bar>
+            </section>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-accordion class="example-headers-align" displayMode="flat" hideToggle="true">
+        <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" expanded=true *ngIf="step ===0">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Step-1. Defining the Work Type and Owner(s)
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <mat-form-field style="width: 100%" floatLabel="always">
+                <mat-label>1. What is the name of this work type?</mat-label>
+                <input matInput [(ngModel)]="newWorkType.name">
+            </mat-form-field>
+            <mat-form-field style="width: 100%" floatLabel="always">
+                <mat-label>2. Please add a brief description of this work type</mat-label>
+                <textarea matInput matTextareaAutosize [(ngModel)]="newWorkType.description"></textarea>
+            </mat-form-field>
+            <mat-form-field style="width: 100%" floatLabel="always">
+                    <mat-label>3. Who can be an owner and make updates and do reassignments for this work type?</mat-label>
+                    <mat-chip-list #chipList>
+                        <mat-chip *ngFor="let tMember of tMembers" [selectable]="true" [removable]="true" (remove)="removeOwner(tMember)">
+                            {{tMember.name}}
+                            <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+                        </mat-chip>
+                        <input [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true"
+                            (matChipInputTokenEnd)="addOwner($event)" />
+                    </mat-chip-list>
+            </mat-form-field>
+            <mat-action-row>
+                <!-- <button mat-button color="warn" (click)="prevStep()">Previous</button> -->
+                <button mat-button color="primary" (click)="nextStep()">Next</button>
+            </mat-action-row>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" hideToggle="true" *ngIf="step ===1">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Step-3. Production Points
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-card>
+            <section class="example-section">
+                <mat-label>4. Are there any production points rewarded for completing this?</mat-label>  
+                <mat-form-field style="width: 100%" floatLabel="always">
+                    <mat-radio-group [(ngModel)]="newWorkType.hasProductionPoints">
+                        <mat-radio-button class="example-margin"  *ngFor="let yesno of EnumYesNo" [value]="yesno.key"> {{yesno.value}}</mat-radio-button>
+                    </mat-radio-group>
+                </mat-form-field>
+            </section>
+            
+            <mat-card  *ngIf="newWorkType.hasProductionPoints">        
+                <mat-form-field  style="width: 100%"  floatLabel="always">
+                    <mat-label>How many points is this worth?</mat-label>
+                    <input matInput type="number" [(ngModel)]="newWorkType.productionPoints">
+                </mat-form-field>
+                <mat-form-field  style="width: 100%"  floatLabel="always">
+                    <mat-label>How do you want to apply points?</mat-label>
+                    <mat-select [(ngModel)]="newWorkType.howToApplyPoints">
+                        <mat-option *ngFor="let aPt of EnumApplyPointMethods" [value]="aPt.key">
+                            {{aPt.value}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </mat-card>
+            </mat-card>
+            <mat-action-row>
+                <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                <button mat-button color="primary" (click)="nextStep()">Next</button>
+            </mat-action-row>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(3)" hideToggle="true" *ngIf="step ===2">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Step-4. Source of the work
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <!-- 5. -->
+            <mat-form-field style="width: 100%" floatLabel="always">
+                <mat-label>5. Where is the work coming from?</mat-label>
+                <mat-select [(ngModel)]="newWorkType.workComeFrom">
+                    <mat-option *ngFor="let comeFrom of EnumWorkComeFroms" [value]="comeFrom.key"> {{comeFrom.value}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-card *ngIf="newWorkType.workComeFrom === 2">
+                <mat-form-field style="width: 100%" floatLabel="always">
+                    <mat-label>Please choose stored procedure</mat-label>
+                    <mat-select [(ngModel)]="newWorkType.workStoreProcedure">
+                        <mat-option *ngFor="let spro of EnumStoreProcedures" [value]="spro.key"> {{spro.value}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field style="width: 100%" floatLabel="always">
+                    <mat-label>Is there a field in the stored procedure you want us to use to remove duplicates?</mat-label>
+                    <input matInput [(ngModel)]="newWorkType.workSpFieldCheckDuplicate">
+                </mat-form-field>
+            </mat-card>
+            <mat-card *ngIf="newWorkType.workComeFrom === 3">
+                <mat-form-field style="width: 40%" floatLabel="always">
+                    <mat-label>Type Key Name</mat-label>
+                    <input matInput [(ngModel)]="newWorkType.otherSourceKeyName">
+                </mat-form-field>
+                <mat-form-field style="width: 40%" floatLabel="always">
+                    <mat-label>Type Key Value</mat-label>
+                    <input matInput [(ngModel)]="newWorkType.otherSourceKeyValue">
+                </mat-form-field>
+            </mat-card>
+
+            <mat-action-row>
+                <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                <button mat-button color="primary" (click)="nextStep()">Next</button>
+            </mat-action-row>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)" hideToggle="true" *ngIf="step ===4">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Step-5. Scheduling
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <!-- 6. -->
+            <mat-label>6. Do you want this work type to run automatically on a schedule?</mat-label>
+            <mat-radio-group [(ngModel)]="newWorkType.autoSchedule">
+                <mat-radio-button *ngFor="let yesno of EnumYesNo" [value]="yesno.key"> {{yesno.value}}</mat-radio-button>
+            </mat-radio-group>
+
+            <mat-card *ngIf="newWorkType.autoSchedule">
+                <mat-card>
+                    <mat-form-field style="width: 100%" floatLabel="always">
+                        <mat-label>How often do you want this to run?</mat-label>
+                        <mat-select [(ngModel)]="newWorkType.scheduleHowOften">
+                            <mat-option *ngFor="let autoScheduleRun of EnumAutoScheduleRun" [value]="autoScheduleRun.key"> {{autoScheduleRun.value}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-card *ngIf="newWorkType.scheduleHowOften === 2">
+                        <mat-form-field style="width: 40%" floatLabel="always">
+                            <mat-label>What day(s) of week do you want this to run?</mat-label>
+                            <input matInput [(ngModel)]="newWorkType.scheduleDaysWeek">
+                        </mat-form-field>
+                    </mat-card>
+                    <mat-card *ngIf="newWorkType.scheduleHowOften === 3">
+                        <mat-form-field style="width: 40%" floatLabel="always">
+                            <mat-label>What day(s) of week do you want this to run?</mat-label>
+                            <input matInput [(ngModel)]="newWorkType.scheduleDaysBiWeek">
+                        </mat-form-field>
+                    </mat-card>
+                    <mat-card *ngIf="newWorkType.scheduleHowOften === 4">
+                        <mat-form-field style="width: 40%" floatLabel="always">
+                            <mat-label>What day(s) of month do you want this to run?</mat-label>
+                            <input matInput [(ngModel)]="newWorkType.scheduleDaysMonth">
+                        </mat-form-field>
+                        <mat-form-field style="width: 40%" floatLabel="always">
+                            <mat-label>Is this a calendar day or business day?</mat-label>
+                            <mat-select [(ngModel)]="newWorkType.scheduleMonthBCDay">
+                                <mat-option *ngFor="let cbDay of EnumCalendarBusiness" [value]="cbDay.key"> {{cbDay.value}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </mat-card>
+                    <mat-card *ngIf="newWorkType.scheduleHowOften === 5">
+                        <mat-form-field style="width: 40%" floatLabel="always">
+                            <mat-label>What day of the year do you want this to run?</mat-label>
+                            <input matInput [(ngModel)]="newWorkType.scheduleDaysYear">
+                        </mat-form-field>
+                        <mat-form-field style="width: 40%" floatLabel="always">
+                            <mat-label>Is this a calendar day or business day?</mat-label>
+                            <mat-select [(ngModel)]="newWorkType.scheduleYearBCDay">
+                                <mat-option *ngFor="let cbYearDay of EnumCalendarBusiness" [value]="cbYearDay.key"> {{cbYearDay.value}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </mat-card>
+                </mat-card>
+
+                <mat-card *ngIf="newWorkType.autoSchedule">
+                    <mat-form-field style="width: 40%" floatLabel="always">
+                        <mat-label>What time should this schedule run?</mat-label>
+                        <input matInput [(ngModel)]="newWorkType.otherSourceKeyValue">
+                    </mat-form-field>
+                </mat-card>
+                <mat-card *ngIf="newWorkType.autoSchedule">
+                    <mat-label>Do you want this schedule to include holidays or weekends?</mat-label>
+                    <mat-radio-group [(ngModel)]="newWorkType.scheduleWithHolidays">
+                        <mat-radio-button *ngFor="let yesno of EnumYesNo" [value]="yesno.key"> {{yesno.value}}</mat-radio-button>
+                    </mat-radio-group>
+                    <mat-card *ngIf="!newWorkType.scheduleWithHolidays">
+                        <mat-form-field style="width: 100%" floatLabel="always">
+                            <mat-label>Do you want this to run before or after a holiday or weekend?</mat-label>
+                            <mat-select [(ngModel)]="newWorkType.scheduleHowOften">
+                                <mat-option *ngFor="let autoBeforeAfter of EnumAutoScheduleRunOffsets" [value]="autoBeforeAfter.key"> {{autoBeforeAfter.value}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </mat-card>
+                </mat-card>
+
+            </mat-card>
+            <mat-action-row>
+                <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                <button mat-button color="primary" (click)="nextStep()">Next</button>
+            </mat-action-row>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="step === 5" (opened)="setStep(5)" hideToggle="true" *ngIf="step ===5">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Step-6. Assigned to
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-action-row>
+                <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                <button mat-button color="primary" (click)="nextStep()">Next</button>
+            </mat-action-row>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="step === 6" (opened)="setStep(6)" hideToggle="true" *ngIf="step ===6">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Step-7. Assignment Type
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-action-row>
+                <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                <button mat-button color="primary" (click)="nextStep()">Next</button>
+            </mat-action-row>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="step === 7" (opened)="setStep(7)" hideToggle="true" *ngIf="step ===7">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Step-8. Work Style
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-action-row>
+                <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                <button mat-button color="primary" (click)="nextStep()">Next</button>
+            </mat-action-row>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="step === 8" (opened)="setStep(8)" hideToggle="true" *ngIf="step ===8">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Step-9. Grouping
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-action-row>
+                <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                <button mat-button color="primary" (click)="nextStep()">Next</button>
+            </mat-action-row>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="step === 9" (opened)="setStep(9)" hideToggle="true" *ngIf="step ===9">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Step-10. Links, etc
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-action-row>
+                <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                <button mat-button color="primary" (click)="nextStep()">Next</button>
+            </mat-action-row>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="step === 10" (opened)="setStep(10)" hideToggle="true" *ngIf="step ===10">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Step-11. Priority
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-action-row>
+                <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                <button mat-button color="primary" (click)="nextStep()">End</button>
+            </mat-action-row>
+        </mat-expansion-panel>
+    </mat-accordion>
+
+    <app-alert></app-alert>
+
+    <mat-action-row *ngIf="step ===11">
+        <button mat-button color="warn" (click)="resetData()">Reset</button>
+        <button mat-button color="primary" (click)="saveData()">Save</button>
+        <button mat-button color="primary" (click)="previewData()">Preview</button>
+    </mat-action-row>
+
+
+</div>

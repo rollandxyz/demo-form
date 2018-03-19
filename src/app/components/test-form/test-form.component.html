@@ -1,0 +1,48 @@
+<h3>Work Type Setup Form</h3>
+<form class="formwidth" (ngSubmit)="onSubmit()" #myForm="ngForm">
+  <table class="fullwidth" cellspacing="0">
+    <tr>
+      <td>
+        <mat-form-field class="fullwidth">
+          <input mdInput placeholder="First Name" id="firstname" [(ngModel)]="workTypeDef.firstname" name="firstname">
+        </mat-form-field>
+      </td>
+      <td>
+        <mat-form-field class="fullwidth">
+          <input mdInput placeholder="Last Name" id="lastname" [(ngModel)]="workTypeDef.lastname" name="lastname">
+        </mat-form-field>
+      </td>
+    </tr>
+  </table>
+  <p>
+    <mat-form-field class="fullwidth">
+      <textarea mdInput placeholder="Address" id="address" [(ngModel)]="workTypeDef.address" name="address"></textarea>
+    </mat-form-field>
+  </p>
+  <table class="fullwidth" cellspacing="0">
+    <tr>
+      <td>
+        
+        <mat-form-field class="fullwidth">
+          <input mdInput placeholder="City" id="city" [(ngModel)]="workTypeDef.city" name="city">
+        </mat-form-field>
+      </td>
+      <td>
+        <mat-form-field class="fullwidth">
+          <input mdInput placeholder="State" id="state" [(ngModel)]="workTypeDef.state" name="state">
+        </mat-form-field>
+      </td>
+      <td>
+        <mat-form-field class="fullwidth">
+          <input mdInput #postalcode maxlength="5" placeholder="Postal Code" id="postalcode" [(ngModel)]="workTypeDef.postalcode" name="postalcode">
+          <mat-hint align="end">
+            {{postalcode.value.length}} / 5
+          </mat-hint>
+        </mat-form-field>
+      </td>
+    </tr>
+  </table>
+  <p>
+    <button type="submit" mat-raised-button>Submit</button>
+  </p>
+</form>

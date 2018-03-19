@@ -1,0 +1,20 @@
+.mat-card-work-type-setup{
+    /* max-width: 600px; */
+}
+
+ 
+
+
+.mat-expansion-panel { 
+    background-color:wheat;  
+}
+.mat-expansion-panel-header {
+    background-color:wheat; 
+}
+
+.mat-expansion-panel:not(.mat-expanded) {
+    background-color: white;
+}
+.mat-expansion-panel-header:not(.mat-expanded) {
+    background-color: white; 
+}
